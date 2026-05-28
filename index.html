@@ -218,7 +218,8 @@ window._setActive = function(id) {
 
 window._toggleDay = async function(day) {
   const thisDate = new Date(2026, 5, day);
-  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  //const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const compareDate = new Date(2026, 4, 27); // temp: allow May 28
   if (thisDate > compareDate) return;
 
   const key = dayKey(day);
@@ -250,7 +251,8 @@ function renderCalendar() {
   let html = dayNames.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
   const startDow = new Date(2026,5,1).getDay();
   for (let i=0;i<startDow;i++) html += `<div class="cal-day empty"></div>`;
-  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  //const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const compareDate = new Date(2026, 4, 27); // temp: allow May 28
   for (let d=1;d<=30;d++) {
     const key = dayKey(d);
     const thisDate = new Date(2026,5,d);
