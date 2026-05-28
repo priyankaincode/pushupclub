@@ -117,13 +117,8 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// ─────────────────────────────────────────────────────────────
-// STEP 1: Replace this object with your Firebase config.
-// Get it from: Firebase Console → Project Settings → Your apps → SDK setup
-// ─────────────────────────────────────────────────────────────
-const firebaseConfig = PASTE_YOUR_FIREBASE_CONFIG_HERE;
-// Example of what it looks like:
-// const firebaseConfig = {
+
+const firebaseConfig = {
   apiKey: "AIzaSyAQi2JSTxIDVMy-P8reeh8H6mSQyicIHNQ",
 
   authDomain: "ballet-push-up-club.firebaseapp.com",
@@ -136,7 +131,7 @@ const firebaseConfig = PASTE_YOUR_FIREBASE_CONFIG_HERE;
 
   appId: "1:431557270626:web:d7fa14cff827ac10b4053b"
 
-// };
+};
 // ─────────────────────────────────────────────────────────────
 
 const MEMBERS = [
