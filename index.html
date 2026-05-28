@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Push Up Club 💪</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EC;
+    --surface: #EDEAE2;
+    --card: #FDFCFA;
+    --border: rgba(0,0,0,0.10);
+    --border-strong: rgba(0,0,0,0.20);
+    --text: #1A1814;
+    --text-muted: #6B6760;
+    --text-faint: #A8A59E;
+    --accent: #C8501A;
+    --accent-light: #F5E8E2;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  /* ── Header ── */
+  header {
+    margin-bottom: 2.5rem;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .brand-name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .brand-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--accent);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .brand-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+  }
+
+  /* ── Members bar ── */
+  .members-section {
+    margin-bottom: 1.5rem;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+  }
+  .members-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .member-btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-strong);
+    background: var(--card);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .member-btn:hover { border-color: var(--text); color: var(--text); }
+  .member-btn.active { color: white; border-color: transparent; }
+  .add-member-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1.5px dashed var(--border-strong);
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .add-member-btn:hover { border-color: var(--text-muted); color: var(--text-muted); }
+
+  /* ── Calendar ── */
+  .calendar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .cal-month-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
+    letter-spacing: -0.2px;
+  }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+  .cal-day-hdr {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    text-align: center;
+    padding: 0 0 6px;
+    letter-spacing: 0.05em;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px 2px 3px;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+    position: relative;
+    min-height: 44px;
+  }
+  .cal-day:hover:not(.empty):not(.future) {
+    border-color: var(--border-strong);
+    background: var(--surface);
+  }
+  .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+  .cal-day.future { opacity: 0.35; cursor: not-allowed; }
+  .cal-day.is-today { border-color: var(--accent); }
+  .day-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .cal-day.is-today .day-num { color: var(--accent); font-weight: 500; }
+  .dot-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+    max-width: 32px;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Leaderboard ── */
+  .lb-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .lb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+  }
+  .lb-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .lb-prize {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .lb-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+    font-family: var(--sans);
+  }
+  .lb-name {
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .lb-bar-wrap {
+    flex: 2;
+    height: 4px;
+    background: var(--surface);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .lb-bar { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+  .lb-days {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 28px;
+    text-align: right;
+  }
+  .leader-crown {
+    font-size: 14px;
+    margin-right: 2px;
+  }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .action-btn {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--card);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .action-btn:hover { background: var(--surface); color: var(--text); border-color: var(--text); }
+  .action-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* ── Share area ── */
+  .share-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    word-break: break-all;
+    line-height: 1.5;
+    max-height: 72px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+  .copy-btn {
+    margin-top: 8px;
+  }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .modal input, .modal textarea {
+    width: 100%;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    margin-bottom: 10px;
+  }
+  .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+  .modal textarea { height: 90px; resize: vertical; }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-cancel {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .btn-confirm {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+  }
+  .btn-confirm:hover { opacity: 0.9; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 9px 20px;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Instruction strip ── */
+  .instruction-strip {
+    background: var(--accent-light);
+    border: 1px solid rgba(200,80,26,0.2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+  .instruction-strip strong { font-weight: 500; }
+
+  @media (max-width: 480px) {
+    .shell { padding: 1.5rem 1rem 3rem; }
+    .brand-name { font-size: 22px; }
+    .cal-day { min-height: 36px; }
+    .dot { width: 5px; height: 5px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <span class="brand-name">Push Up Club</span>
+      <span class="brand-tag">JUNE 2026</span>
+    </div>
+    <div class="brand-sub">most days = free latte ☕ · consistency over quantity</div>
+  </header>
+
+  <div class="instruction-strip">
+    <strong>How to use:</strong> Pick your name → tap any past or today's date to log a push-up day → use Export/Import to sync with the group
+  </div>
+
+  <div class="members-section">
+    <div class="section-label">Who are you?</div>
+    <div class="members-bar" id="membersBar"></div>
+  </div>
+
+  <div class="calendar-card">
+    <div class="cal-month-label">June 2026</div>
+    <div class="cal-grid" id="calendar"></div>
+  </div>
+
+  <div class="lb-card">
+    <div class="lb-header">
+      <div class="lb-title">Leaderboard</div>
+      <div class="lb-prize">☕ most days wins</div>
+    </div>
+    <div id="leaderboard"></div>
+  </div>
+
+  <div class="actions">
+    <button class="action-btn" onclick="openAddMember()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/><path d="M19 8h6M22 5v6"/></svg>
+      Add member
+    </button>
+    <button class="action-btn" onclick="exportState()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Export
+    </button>
+    <button class="action-btn" onclick="openImport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 16 12 21 17 16"/><line x1="12" y1="21" x2="12" y2="9"/></svg>
+      Import
+    </button>
+  </div>
+
+  <div id="shareArea"></div>
+</div>
+
+<div id="modalMount"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const COLORS = ['#C8501A','#4A7C59','#4A6FA5','#8B5E83','#B08C3A','#4A8B8B','#8B4A4A'];
+
+let state = {
+  members: [
+    { name: 'Member 1', id: 'm1' },
+    { name: 'Member 2', id: 'm2' },
+    { name: 'Member 3', id: 'm3' },
+  ],
+  logs: {},
+  activeMember: 'm1'
+};
+
+const today = new Date();
+const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+function dayKey(d) {
+  return '2026-06-' + String(d).padStart(2,'0');
+}
+
+function colorFor(idx) { return COLORS[idx % COLORS.length]; }
+
+function initials(name) {
+  return name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function setActive(id) {
+  state.activeMember = id;
+  renderMembersBar();
+}
+
+function toggleDay(day) {
+  const thisDate = new Date(2026, 5, day);
+  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (thisDate > compareDate) return;
+  const key = dayKey(day);
+  if (!state.logs[key]) state.logs[key] = [];
+  const arr = state.logs[key];
+  const idx = arr.indexOf(state.activeMember);
+  if (idx === -1) arr.push(state.activeMember);
+  else arr.splice(idx, 1);
+  renderCalendar();
+  renderLeaderboard();
+  save();
+}
+
+function renderMembersBar() {
+  const bar = document.getElementById('membersBar');
+  let html = state.members.map((m, i) => {
+    const active = m.id === state.activeMember;
+    const col = colorFor(i);
+    const style = active ? `background:${col};color:white;border-color:${col};` : '';
+    return `<button class="member-btn${active?' active':''}" style="${style}" onclick="setActive('${m.id}')">${m.name}</button>`;
+  }).join('');
+  html += `<button class="add-member-btn" onclick="openAddMember()">+ add</button>`;
+  bar.innerHTML = html;
+}
+
+function renderCalendar() {
+  const cal = document.getElementById('calendar');
+  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = days.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
+  const startDow = new Date(2026, 5, 1).getDay();
+  for (let i=0; i<startDow; i++) html += `<div class="cal-day empty"></div>`;
+  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  for (let d=1; d<=30; d++) {
+    const key = dayKey(d);
+    const thisDate = new Date(2026, 5, d);
+    const isFuture = thisDate > compareDate;
+    const isToday = key === todayStr;
+    const members = state.logs[key] || [];
+    const dots = members.map(mid => {
+      const idx = state.members.findIndex(m=>m.id===mid);
+      if (idx < 0) return '';
+      return `<div class="dot" style="background:${colorFor(idx)}" title="${state.members[idx].name}"></div>`;
+    }).join('');
+    html += `<div class="cal-day${isFuture?' future':''}${isToday?' is-today':''}" ${isFuture?'':'onclick="toggleDay('+d+')"'}>
+      <div class="day-num">${d}</div>
+      <div class="dot-row">${dots}</div>
+    </div>`;
+  }
+  cal.innerHTML = html;
+}
+
+function renderLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  const counts = state.members.map((m,i) => {
+    let count = 0;
+    Object.values(state.logs).forEach(arr => { if (arr.includes(m.id)) count++; });
+    return { m, i, count };
+  }).sort((a,b) => b.count - a.count);
+  const max = Math.max(...counts.map(c=>c.count), 1);
+  lb.innerHTML = counts.map((c, rank) => {
+    const pct = Math.round((c.count / max) * 100);
+    const isLeader = rank === 0 && c.count > 0;
+    return `<div class="lb-row">
+      <div class="lb-rank">${isLeader ? '☕' : rank+1}</div>
+      <div class="lb-avatar" style="background:${colorFor(c.i)}">${initials(c.m.name)}</div>
+      <div class="lb-name">${c.m.name}</div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%;background:${colorFor(c.i)}"></div></div>
+      <div class="lb-days">${c.count}</div>
+    </div>`;
+  }).join('');
+}
+
+function save() {
+  try { localStorage.setItem('pushupclub_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const s = localStorage.getItem('pushupclub_state');
+    if (s) { const p = JSON.parse(s); if (p.members && p.logs) state = p; }
+  } catch(e) {}
+}
+
+function exportState() {
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  const area = document.getElementById('shareArea');
+  area.innerHTML = `<div class="share-box" id="shareCode">${encoded}</div>
+    <button class="action-btn copy-btn" onclick="copyExport()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copy code
+    </button>`;
+}
+
+function copyExport() {
+  const el = document.getElementById('shareCode');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent.trim())
+    .then(()=>showToast('Copied to clipboard!'))
+    .catch(()=>showToast('Select the code and copy manually'));
+}
+
+function openAddMember() {
+  if (state.members.length >= 7) { showToast('Max 7 members'); return; }
+  const mount = document.getElementById('modalMount');
+  mount.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-title">Add a member</div>
+      <input id="newName" type="text" placeholder="Name" maxlength="20" onkeydown="if(event.key==='Enter')addMember()" autofocus />
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" onclick="addMember()">Add</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>{ const el=document.getElementById('newName'); if(el) el.focus(); }, 30);
+}
+
+function addMember() {
+  const input = document.getElementById('newName');
+  const name = input ? input.value.trim() : '';
+  if (!name) return;
+  const id = 'm' + Date.now();
+  state.members.push({ name, id });
+  state.activeMember = id;
+  closeModal();
+  save();
+  renderAll();
+  showToast(name + ' added!');
+}
+
+function openImport() {
+  const mount = document.getElementById('modalMount');
+  mount.innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-title">Import state</div>
+      <textarea id="importCode" placeholder="Paste the export code here"></textarea>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" onclick="doImport()">Load</button>
+      </div>
+    </div>
+  </div>`;
+  setTimeout(()=>{ const el=document.getElementById('importCode'); if(el) el.focus(); }, 30);
+}
+
+function doImport() {
+  const el = document.getElementById('importCode');
+  if (!el) return;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(escape(atob(el.value.trim()))));
+    if (!parsed.members || !parsed.logs) throw new Error();
+    state = parsed;
+    closeModal();
+    save();
+    renderAll();
+    showToast('Loaded!');
+  } catch(e) { showToast('Invalid code — check and try again'); }
+}
+
+function closeModal() {
+  document.getElementById('modalMount').innerHTML = '';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function renderAll() {
+  renderMembersBar();
+  renderCalendar();
+  renderLeaderboard();
+}
+
+load();
+renderAll();
+</script>
+</body>
+</html>
