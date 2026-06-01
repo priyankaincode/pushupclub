@@ -160,7 +160,8 @@ let db;
 try {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
-  document.getElementById('configBanner').style.display = 'none';
+  const banner = document.getElementById('configBanner');
+  if (banner) banner.style.display = 'none';
   setStatus('connecting', 'connecting...');
 
   const docRef = doc(db, 'pushupclub', 'june2026');
