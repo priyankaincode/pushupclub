@@ -151,7 +151,7 @@ const COLORS = ['#C8501A','#4A7C59','#4A6FA5','#8B5E83','#B08C3A','#4A8B8B'];
 const today = new Date();
 const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 
-let activeMember = 'm1';
+let activeMember = null;
 let logs = {}; // { 'YYYY-MM-DD': ['m1','m3', ...] }
 
 function colorFor(idx) { return COLORS[idx % COLORS.length]; }
@@ -221,6 +221,7 @@ window._setActive = function(id) {
 };
 
 window._toggleDay = async function(day) {
+  if (!activeMember) { showToast('Pick your name first!'); return; }
   const thisDate = new Date(2026, 5, day);
   const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   if (thisDate > compareDate) return;
